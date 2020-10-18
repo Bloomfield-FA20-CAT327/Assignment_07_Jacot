@@ -1,11 +1,12 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class GameControllerScript : MonoBehaviour
 {
+    Text uiText;
+
     public int strength;
 
     public int speed;
@@ -19,7 +20,7 @@ public class GameControllerScript : MonoBehaviour
 
     void Awake()
     {
-      if(PlayerPrefs.HasKey("score"))
+      if(PlayerPrefs.HasKey("intelligence"))
         {
             GetPlayerStats();
             if(playingLevel!=0&&playingLevel!=SceneManager.GetActiveScene().buildIndex)
@@ -35,17 +36,25 @@ public class GameControllerScript : MonoBehaviour
     void Start()
     {
         
+        uiText = GameObject.Find("StatsText").GetComponent<Text>(); 
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+        string UItextinfo = "";
+
+        UItextinfo += "Score : " + score + "\n";
+        UItextinfo += "Strength: " + strength + "\n";
+        UItextinfo += "Speed: " + speed + "\n";
+        UItextinfo += "Intelligence: " + intelligence + "\n";
+
+        uiText.text = UItextinfo;
     }
 
     public void NewGame()
     {
-        if(PlayerPrefs.HasKey("score"))
+        if(PlayerPrefs.HasKey("intelligence"))
         {
             GetRidOfPlayerValues();
         }
@@ -63,6 +72,12 @@ public class GameControllerScript : MonoBehaviour
         PlayerStatsSetter();
     }
 
+    private void LoadStage()
+    {
+        PlayerStatsSetter();
+        SceneManager.LoadScene(playingLevel);
+    }
+
     void PlayerStatsSetter()
     {
         PlayerPrefs.SetInt("score", score);
@@ -78,6 +93,7 @@ public class GameControllerScript : MonoBehaviour
         intelligence = PlayerPrefs.GetInt("intelligence");
         strength = PlayerPrefs.GetInt("strength");
         speed = PlayerPrefs.GetInt("speed");
+        playingLevel = PlayerPrefs.GetInt("playinglevel");
 
     }
 
@@ -88,5 +104,32 @@ public class GameControllerScript : MonoBehaviour
         PlayerPrefs.DeleteKey("strength");
         PlayerPrefs.DeleteKey("speed");
 
+    }
+
+    public void StrengthAdd()
+    {
+        strength += 5;
+    }
+
+    public void IntelliAdd()
+    {
+        intelligence += 5;
+    }
+
+    public void SpeedAdd()
+    {
+        speed += 5;
+    }
+
+    public void UpLevel()
+    {
+        playingLevel = SceneManager.GetActiveScene().buildIndex + 1;
+        LoadScene();
+    }
+
+    private void LoadScene()
+    {
+        PlayerStatsSetter();
+        SceneManager.LoadScene(playingLevel);
     }
 }
